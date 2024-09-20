@@ -3,30 +3,30 @@ from models.location import LocationModel
 from flask_restful import reqparse
 
 location_parser = reqparse.RequestParser()
-location_parser.add_argument('name', type=str, required=True, help="Name cannot be blank!")
+location_parser.add_argument('name', type=str, required=True, help="name cannot be blank!")
 location_parser.add_argument('station_id', type=int, required=True, help="station_id cannot be blank!")
 
 def get_location_by_id(location_id):
     location = LocationModel.get_by_id(location_id)
     if not location:
-        abort(404, message="Location not found")
+        abort(404, description="Location not found")
     
     # Prepare response with station, line, and shop details
     response = {
         "name": location.name,
-        "_id": str(location.id),
-        "station_id": location.station_id,
+        "_id": location.id,
+        "station_id": location.stations.id,
         "station": {
-            "name": location.station.name,
-            "_id": str(location.station.id),
-            "line_id": str(location.station.line.id),
-            "line": {
-                "name": location.station.line.name,
-                "_id": str(location.station.line.id),
-                "shop_id": str(location.station.line.shop.id),
+            "name": location.stations.name,
+            "_id": location.stations.id,
+            "line_id": location.stations.lines.id,
+            "line": { 
+                "name": location.stations.lines.name,
+                "_id": location.stations.lines.id,
+                "shop_id": location.stations.lines.shops.id,
                 "shop": {
-                    "name": location.station.line.shop.name,
-                    "_id": str(location.station.line.shop.id)
+                    "name": location.stations.lines.shops.name,
+                    "_id": location.stations.lines.shops.id
                 }
             }
         }
@@ -41,18 +41,18 @@ def get_all_locations():
             {
                 "name": location.name,
                 "_id": location.id,
-                "station_id": location.station_id,
+                "station_id": location.stations.id,
                 "station": {
-                    "name": location.station.name,
-                    "_id": location.station.id,
-                    "line_id": location.station.line.id,
+                    "name": location.stations.name,
+                    "_id": location.stations.id,
+                    "line_id": location.stations.lines.id,
                     "line": {
-                        "name": location.station.line.name,
-                        "_id": location.station.line.id,
-                        "shop_id": location.station.line.shop.id,
+                        "name": location.stations.lines.name,
+                        "_id": location.stations.lines.id,
+                        "shop_id": location.stations.lines.shops.id,
                         "shop": {
-                            "name": location.station.line.shop.name,
-                            "_id": location.station.line.shop.id
+                            "name": location.stations.lines.shops.name,
+                            "_id": location.stations.lines.shops.id
                         }
                     }
                 }
@@ -70,19 +70,19 @@ def get_paginated_locations():
         "items": [
             {
                 "name": location.name,
-                "_id": str(location.id),
-                "station_id": location.station_id,
+                "_id": location.id,
+                "station_id": location.stations.id,
                 "station": {
-                    "name": location.station.name,
-                    "_id": str(location.station.id),
-                    "line_id": str(location.station.line.id),
+                    "name": location.stations.name,
+                    "_id": location.stations.id,
+                    "line_id": location.stations.lines.id,
                     "line": {
-                        "name": location.station.line.name,
-                        "_id": str(location.station.line.id),
-                        "shop_id": str(location.station.line.shop.id),
+                        "name": location.stations.lines.name,
+                        "_id": location.stations.lines.id,
+                        "shop_id": location.stations.lines.shops.id,
                         "shop": {
-                            "name": location.station.line.shop.name,
-                            "_id": str(location.station.line.shop.id)
+                            "name": location.stations.lines.shops.name,
+                            "_id": location.stations.lines.shops.id
                         }
                     }
                 }
@@ -99,7 +99,7 @@ def get_paginated_locations():
 
 def create_location():
     data = location_parser.parse_args()
-    new_location = LocationModel(name=data['name'], station_id=data["station_id"])
+    new_location = LocationModel(name=data['name'], station_id=data['station_id'])
     new_location.save()
     return jsonify({'message': 'Location created', 'id': new_location.id})
 
@@ -119,7 +119,7 @@ def delete_location(location_id):
     return jsonify({'message': 'Location deleted'})
 
 def delete_all_location():
-        location_records = LocationModel.query.all()  # Retrieve all location records
+        location_records = LocationModel.query.all()  
         for location in location_records:
             location.delete()
         return jsonify({'message': 'All locations deleted'})
