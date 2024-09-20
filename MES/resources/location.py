@@ -6,7 +6,6 @@ from helper_function.location import (
     create_location,
     update_location,
     delete_location,
-    delete_all_location
 )
 
 class LocationResource(Resource):
@@ -17,8 +16,7 @@ class LocationResource(Resource):
         elif request.path == "/locations/all":
             return get_all_locations()
         else:
-            args = LocationResource.pagination_parser.parse_args()
-            return get_paginated_locations(args)
+            return get_paginated_locations()
 
     def post(self):
         return create_location()
