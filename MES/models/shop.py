@@ -6,7 +6,7 @@ class ShopModel(CommonModel, SurrogatePK):
     __tablename__="shop"
     name = db.Column(db.String(200), nullable=False)
     
-    lines = relationship("LineModel", back_populates="shopes")
+    lines = relationship("LineModel", back_populates="shops")
     
 
    
