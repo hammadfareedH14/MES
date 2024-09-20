@@ -9,10 +9,10 @@ shop_parser.add_argument('name', type=str, required=True, help="Name cannot be b
 def get_shop_by_id(shop_id):
     shop = ShopModel.get_by_id(shop_id)
     if not shop:
-        abort(404, message="Shop not found")
+        abort(404, description="Shop not found")
     return jsonify({
         "name": shop.name,
-        "_id": str(shop.id)
+        "_id": shop.id
     })
 
 def get_all_shops():
@@ -21,21 +21,22 @@ def get_all_shops():
         "items": [
             {
                 "name": shop.name,
-                "_id": str(shop.id)
+                "_id": shop.id
             } for shop in shops
         ]
     }
     return jsonify(response)
 
-def paginate_shops(page, per_page):
+def paginate_shops():
     page = request.args.get('page', 1)  
-    per_page = request.args.get('per_page', 10)  
+    per_page = request.args.get('per_page', 10)
+
     paginated_shops = ShopModel.query.paginate(page=page, per_page=per_page, error_out=False)
     response = {
         "items": [
             {
                 "name": shop.name,
-                "_id": str(shop.id)
+                "_id":  shop.id
             } for shop in paginated_shops.items
         ],
         "pagination": {
@@ -53,7 +54,7 @@ def create_shop():
     new_shop.save()
     return jsonify({'message': 'Shop created', 'id': new_shop.id})
 
-def update_shop(shop_id, data):
+def update_shop(shop_id):
     data = shop_parser.parse_args()
     shop = ShopModel.get_by_id(shop_id)
     if not shop:
