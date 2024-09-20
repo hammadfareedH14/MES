@@ -17,27 +17,27 @@ def get_line_by_id(line_id):
 
         return jsonify({
             "name": line.name,
-            "_id": str(line.id),
-            "shop_id": str(line.shop.id),
+            "_id": line.id,
+            "shop_id": line.shops.id,
             "shop": {
-                "name": line.shop.name,
-                "_id": str(line.shop.id)
+                "name": line.shops.name,
+                "_id": line.shops.id
             } 
         })
 
 # Function to retrieve all lines
-def get_all_lines(self):
+def get_all_lines():
         lines = LineModel.query.all()
 
         response = {
             "items": [
                 {
                     "name": line.name,
-                    "_id": str(line.id),
-                    "shop_id": str(line.shop.id),
+                    "_id": line.id,
+                    "shop_id": line.shops.id,
                     "shop": {
-                        "name": line.shop.name,
-                        "_id": str(line.shop.id)
+                        "name": line.shops.name,
+                        "_id": line.shops.id
                     }
                 } for line in lines
             ]
@@ -55,11 +55,11 @@ def get_paginated_lines():
             "items": [
                 {
                     "name": line.name,
-                    "_id": str(line.id),
-                    "shop_id": str(line.shop.id),
+                    "_id": line.id,
+                    "shop_id": line.shops.id,
                     "shop": {
-                        "name": line.shop.name,
-                        "_id": str(line.shop.id)
+                        "name": line.shops.name,
+                        "_id": line.shops.id
                     }
                 } for line in paginated_lines.items
             ],
