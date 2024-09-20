@@ -10,19 +10,19 @@ station_parser.add_argument('line_id', type=int, required=True, help="line_id ca
 def get_station_by_id(station_id):
     station = StationModel.get_by_id(station_id)
     if not station:
-        abort(404, message="Station not found")
+        abort(404, description="Station not found")
 
     return jsonify({
         "name": station.name,
-        "_id": str(station.id),
-        "line_id": str(station.line.id),
+        "_id": station.id,
+        "line_id": station.lines.id,
         "line": {
-            "name": station.line.name,
-            "_id": str(station.line.id),
-            "shop_id": str(station.line.shop.id),
+            "name": station.lines.name,
+            "_id": station.lines.id,
+            "shop_id": station.lines.shops.id,
             "shop": {
-                "name": station.line.shop.name,
-                "_id": str(station.line.shop.id)
+                "name": station.lines.shops.name,
+                "_id": station.lines.shops.id
             }
         }
     })
@@ -33,15 +33,15 @@ def get_all_stations():
         "items": [
             {
                 "name": station.name,
-                "_id": str(station.id),
-                "line_id": str(station.line.id),
+                "_id": station.id,
+                "line_id": station.lines.id,
                 "line": {
-                    "name": station.line.name,
-                    "_id": str(station.line.id),
-                    "shop_id": str(station.line.shop.id),
+                    "name": station.lines.name,
+                    "_id": station.lines.id,
+                    "shop_id": station.lines.shops.id,
                     "shop": {
-                        "name": station.line.shop.name,
-                        "_id": str(station.line.shop.id)
+                        "name": station.lines.shops.name,
+                        "_id": station.lines.shops.id
                     }
                 }
             } for station in stations
@@ -49,7 +49,7 @@ def get_all_stations():
     }
     return jsonify(response)
 
-def paginate_stations(page, per_page):
+def paginate_stations():
     page = request.args.get('page', 1)  
     per_page = request.args.get('per_page', 10) 
     paginated_stations = StationModel.query.paginate(page=page, per_page=per_page, error_out=False)
@@ -58,14 +58,14 @@ def paginate_stations(page, per_page):
             {
                 "name": station.name,
                 "_id": station.id,
-                "line_id": station.line.id,
+                "line_id": station.lines.id,
                 "line": {
-                    "name": station.line.name,
-                    "_id": str(station.line.id),
-                    "shop_id": str(station.line.shop.id),
+                    "name": station.lines.name,
+                    "_id": station.lines.id,
+                    "shop_id": station.lines.shops.id,
                     "shop": {
-                        "name": station.line.shop.name,
-                        "_id": str(station.line.shop.id)
+                        "name": station.lines.shops.name,
+                        "_id": station.lines.shops.id
                     }
                 }
             } for station in paginated_stations.items
@@ -79,13 +79,13 @@ def paginate_stations(page, per_page):
     }
     return jsonify(response)
 
-def create_station(data):
+def create_station():
     data = station_parser.parse_args()
     new_station = StationModel(name=data['name'], line_id=data['line_id'])
     new_station.save()
     return jsonify({'message': 'Station created', 'id': new_station.id})
 
-def update_station(station_id, data):
+def update_station(station_id):
     data = station_parser.parse_args()
     station = StationModel.get_by_id(station_id)
     if not station:
