@@ -1,3 +1,4 @@
+
 from flask import jsonify,abort,request
 from models.route import RouteModel
 from flask_restful import reqparse
@@ -29,7 +30,7 @@ def get_all_routes():
     }
     return jsonify(response)
 
-def get_paginated_routes(page, per_page):
+def get_paginated_routes():
     page = request.args.get('page', 1)
     per_page = request.args.get('per_page', 10)
     paginated_routes = RouteModel.query.paginate(page=page, per_page=per_page, error_out=False)
@@ -50,12 +51,14 @@ def get_paginated_routes(page, per_page):
     }
     return jsonify(response)
 
-def create_route(data):
+def create_route():
+    data= route_parser.parse_args()
     new_route = RouteModel(name=data['name'], description=data["description"])
     new_route.save()
     return jsonify({'message': 'Route created', 'id': new_route.id})
 
-def update_route(route_id, data):
+def update_route(route_id):
+    data= route_parser.parse_args()
     route = RouteModel.get_by_id(route_id)
     if not route:
         abort(404, message="Route not found")
