@@ -17,6 +17,11 @@ from resources.node import NodeResource
 from resources.operation import OperationResource
 from resources.datacapture import DataCaptureResource
 
+### DROP ANY ONE TABLE USING FLASK_SQLALCHEMY  ###
+# from models.user  import UserModel
+# with app.app_context(): 
+#     # Drop the 'user' table
+#     UserModel.__table__.drop(db.engine)
 
 
 app = Flask(__name__)
