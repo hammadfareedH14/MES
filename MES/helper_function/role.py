@@ -3,7 +3,7 @@ from models.role import RoleModel
 from flask_restful import reqparse
 
 role_parser = reqparse.RequestParser()  
-role_parser.add_argument('name', type=int, required=True, help="name cannot be blank!")
+role_parser.add_argument('name', type=str, required=True, help="name cannot be blank!")
 role_parser.add_argument('description', type=str, required=True, help="description cannot be blank!")
 
 def get_role_by_id(role_id):
