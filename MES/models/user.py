@@ -19,15 +19,15 @@ class UserModel(CommonModel, SurrogatePK, UserMixin):
     username = db.Column(db.String(255), nullable=False)
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255), nullable=False)
-    emailaddress = db.Column(db.String(255), nullable=False)
-    passwordhash = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
     disabled = db.Column(db.Boolean, default=False)  
-    work_location_ids = db.Column(db.JSON, default=[])  
+    work_location_ids = db.Column(db.JSON,db.ForeignKey('location.id'),default=[])  
 
   # Define relationships
     role = relationship('RoleModel', back_populates='users')
-    location = relationship('LocationModel',back_populates='users')
+    locations = relationship('LocationModel',back_populates='users')
 
     @property
     def password(self):
