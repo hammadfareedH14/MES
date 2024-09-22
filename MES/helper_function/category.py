@@ -16,7 +16,7 @@ def get_category_by_id(category_id):
     response = {
         "name": category.name,
         "_id": category.id,
-        "type": category._type.name  
+        "type": category._type.value  
     }
     return jsonify(response)
 
@@ -29,7 +29,7 @@ def get_all_categories():
             {
                 "name": category.name,
                 "_id":  category.id,
-                "type": category._type.name 
+                "type": category._type.value
             } for category in categories
         ]
     }
@@ -46,7 +46,7 @@ def get_paginated_categories():
             {
                 "name": category.name,
                 "_id": category.id,
-                "type": category._type.name  
+                "type": category._type.value
             } for category in paginated_categories.items
         ],
         "pagination": {
