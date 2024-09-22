@@ -76,13 +76,8 @@ def get_types_categories():
 def create_category():
     data = category_parser.parse_args()
 
-    try:
-        category_type = Type[data['_type'].upper()]  
-    except KeyError:
-        return jsonify({
-            'message': f"Invalid type '{data['_type']}'! Valid types are: {[t.name.lower() for t in Type]}"
-        }), 400
-
+    category_type = Type[data['_type'].upper()]  
+  
     new_category = CategoryModel(name=data['name'], _type=category_type)
     new_category.save()
     
@@ -93,20 +88,16 @@ def create_category():
 def update_category(category_id):
     data = category_parser.parse_args()
     category = CategoryModel.get_by_id(category_id)
-    if not category:
-        abort(404, description="Category not found")
+    
 
     category.name = data['name']
+    category._type = Type[data['_type'].upper()]  
     
-    # try:
-    category._type = Type[data['_type'].upper()] 
-    # except KeyError:
-    #     return jsonify({
-    #         'message': f"Invalid type '{data['_type']}'! Valid types are: {[t.name.lower() for t in Type]}"
-    #     }), 400
-    
-    category.update(**data)
+  
+    category.update()  
+
     return jsonify({'message': 'Category updated', 'id': category.id})
+
 
 
 def delete_category(category_id):
