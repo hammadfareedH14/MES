@@ -1,5 +1,6 @@
 from models.abstract import CommonModel,SurrogatePK
 from db import db
+from sqlalchemy.orm import relationship
 
 class RoleModel(CommonModel, SurrogatePK):
     __tablename__ = "role"
@@ -7,4 +8,4 @@ class RoleModel(CommonModel, SurrogatePK):
     description = db.Column(db.String(255), nullable=False)
 
  # Relationship
-    users = db.relationship('UserModel', back_populates='role')
+    users = relationship('UserModel', back_populates='role')
