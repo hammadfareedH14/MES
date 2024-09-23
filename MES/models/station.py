@@ -5,6 +5,8 @@ from sqlalchemy.orm import relationship
 class StationModel(CommonModel, SurrogatePK):
     __tablename__ = "station"
     name = db.Column(db.String(100), nullable=False)
+    
+    # ForeiegnKey
     line_id = db.Column(db.Integer, db.ForeignKey('line.id'), nullable=False)
 
     # Relationships
