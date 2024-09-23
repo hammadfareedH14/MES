@@ -5,8 +5,8 @@ class PartModel(CommonModel, SurrogatePK):
     __tablename__ = "part"
     description = db.Column(db.String(200), nullable=False)
     number = db.Column(db.Integer, nullable=False)
-    
-    # Foreign key
+
+    # ForeignKey
     route_id = db.Column(db.Integer, db.ForeignKey('route.id'), nullable=False)  
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False) 
     
