@@ -19,17 +19,17 @@ def get_part_by_id(part_id):
         "number": part.number,  
         "description": part.description,  
         "_id": part.id,
-        "category_id": part.category.id, 
-        "route_id":    part.route.id,
+        "category_id": part.category_id, 
+        "route_id":    part.route_id,
         "category": {
-            "name": part.category.name,
-            "type": part.category._type.value,
-            "_id":  part.category.id
+            "name": part.categories.name,
+            "type": part.categories._type.value,
+            "_id":  part.categories.id
         },
         "route": {
-            "name": part.route.name,
-            "description": part.route.description,  
-            "_id": part.route.id
+            "name": part.routes.name,
+            "description": part.routes.description,  
+            "_id": part.routes.id
         }
     }
     return jsonify(response)
@@ -44,16 +44,8 @@ def get_all_parts():
                 "number": part.number,  
                 "description": part.description,  
                 "_id": part.id,
-                "category": {
-                    "name": part.category.name,
-                    "_id": part.category.id,
-                    "type": part.category._type.value  
-                },
-                "route": {
-                    "name": part.route.name,
-                    "description": part.route.description,  
-                    "_id": part.route.id
-                }
+                "category_id":part.category_id,
+                "route_id":part.route_id 
             } for part in parts
         ]
     }
@@ -71,15 +63,17 @@ def get_paginated_parts():
                 "number": part.number,  
                 "description": part.description,  
                 "_id": part.id,
+                "category_id":part.category_id,
+                "route_id":part.route_id,
                 "category": {
-                    "name": part.category.name,
-                    "_id": part.category.id,
-                    "type": part.category._type.value  
+                    "name": part.categories.name,
+                    "_id": part.categories.id,
+                    "type": part.categories._type.value  
                 },
                 "route": {
-                    "name": part.route.name,
-                    "description": part.route.description,
-                    "_id": str(part.route.id)
+                    "name": part.routes.name,
+                    "description": part.routes.description,
+                    "_id": part.routes.id
                 }
             } for part in paginated_parts.items
         ],
@@ -116,25 +110,24 @@ def create_part():
 
 def update_part(part_id):
     data = part_parser.parse_args()
+    
     part = PartModel.get_by_id(part_id)
     
     if not part:
-        abort(404, message="Part not found")
-        
-        part.update(**data)  
-        
-        response = {
-            "number": part.number,
-            "description": part.description,
-            "_id": str(part.id),
-            "category_id": str(part.category_id),
-            "route_id": str(part.route_id)
-        }
-        
-        return jsonify(response)
+        abort(404, description="Part not found")
     
+    part.update(**data)  
 
-
+    response = {
+        "number": part.number,
+        "description": part.description,
+        "_id": part.id,
+        "category_id": part.category_id,
+        "route_id": part.route_id
+    }
+    
+    return jsonify(response)
+   
 def delete_part(part_id):  
     part = PartModel.get_by_id(part_id) 
     if not part:
