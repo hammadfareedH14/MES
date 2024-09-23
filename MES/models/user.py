@@ -25,7 +25,7 @@ class UserModel(CommonModel, SurrogatePK, UserMixin):
     disabled = db.Column(db.Boolean, default=False)  
     work_location_ids = db.Column(db.JSON,db.ForeignKey('location.id'),default=[])  
 
-  # Define relationships
+  # Relationships
     role = relationship('RoleModel', back_populates='users')
     locations = relationship('LocationModel',back_populates='users')
 
