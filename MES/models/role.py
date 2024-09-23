@@ -6,5 +6,5 @@ class RoleModel(CommonModel, SurrogatePK):
     name = db.Column(db.String(255), unique=True, nullable=False)
     description = db.Column(db.String(255), nullable=False)
 
- # Define relationship
+ # Relationship
     users = db.relationship('UserModel', back_populates='role')
