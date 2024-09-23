@@ -5,19 +5,19 @@ from models.node import NodeModel
 node_parser = reqparse.RequestParser()
 node_parser.add_argument('current_station_id', type=str, required=True, help="current_station_id cannot be blank")
 node_parser.add_argument('next_station_id', type=str, required=True, help="next_station_id cannot be blank")
-node_parser.add_argument('is_start', type=bool, required=True, help="is_start is required")
-node_parser.add_argument('is_end', type=bool, required=True, help="is_end is required")
-node_parser.add_argument('route_id', type=str, required=True, help="route_id cannot be blank")
+node_parser.add_argument('is_start', type=bool, default=False, help="is_start is required")
+node_parser.add_argument('is_end', type=bool, default=False, help="is_end is required")
+node_parser.add_argument('route_id', type=str, required=True,help="route_id cannot be blank")
 
 
 def get_node_by_id(node_id):
     node = NodeModel.get_by_id(node_id)
 
     if not node:
-        abort(404, message="Node not found")
+        abort(404, description="Node not found")
 
     response = {
-        "timestamp": node.created_at.isoformat() + 'Z',  
+        "timestamp": node.created_at,  
         "_id": node.id,
         "is_start": node.is_start,
         "is_end": node.is_end,
@@ -25,21 +25,21 @@ def get_node_by_id(node_id):
         "current_station_id": node.current_station_id,
         "next_station_id": node.next_station_id,
         "route": {
-            "name": node.route.name,
-            "description": node.route.description,
-            "_id": node.route.id
+            "name": node.routes.name,
+            "description": node.routes.description,
+            "_id": node.routes.id
         },
         "current_station": {
             "name": node.current_station.name,
             "_id": node.current_station.id,
             "line_id": node.current_station.line_id,
             "line": {
-                "name": node.current_station.line.name,
-                "_id": node.current_station.line.id,
-                "shop_id": node.current_station.line.shop_id,
+                "name": node.current_station.lines.name,
+                "_id": node.current_station.lines.id,
+                "shop_id": node.current_station.lines.shop_id,
                 "shop": {
-                    "name": node.current_station.line.shop.name,
-                    "_id": node.current_station.line.shop.id
+                    "name": node.current_station.lines.shops.name,
+                    "_id": node.current_station.lines.shops.id
                 }
             }
         },
@@ -48,12 +48,12 @@ def get_node_by_id(node_id):
             "_id": node.next_station.id,
             "line_id": node.next_station.line_id,
             "line": {
-                "name": node.next_station.line.name,
-                "_id": node.next_station.line.id,
-                "shop_id": node.next_station.line.shop_id,
+                "name": node.next_station.lines.name,
+                "_id": node.next_station.lines.id,
+                "shop_id": node.next_station.lines.shop_id,
                 "shop": {
-                    "name": node.next_station.line.shop.name,
-                    "_id": node.next_station.line.shop.id
+                    "name": node.next_station.lines.shops.name,
+                    "_id": node.next_station.lines.shops.id
                 }
             }
         }
@@ -68,7 +68,7 @@ def get_all_nodes():
     response = {
         "items": [
             {
-                "timestamp": node.created_at.isoformat() + 'Z',  
+                "timestamp": node.created_at,  
                 "_id": node.id,
                 "is_start": node.is_start,
                 "is_end": node.is_end,
@@ -89,7 +89,7 @@ def get_paginated_nodes():
     response = {
         "items": [
             {
-                "timestamp": node.created_at.isoformat() + 'Z',  
+                "timestamp": node.created_at,  
                 "_id": node.id,
                 "is_start": node.is_start,
                 "is_end": node.is_end,
@@ -97,21 +97,21 @@ def get_paginated_nodes():
                 "current_station_id": node.current_station_id,
                 "next_station_id": node.next_station_id,
                 "route": {
-                    "name": node.route.name,
-                    "description": node.route.description,
-                    "_id": node.route.id
+                    "name": node.routes.name,
+                    "description": node.routes.description,
+                    "_id": node.routes.id
                 },
                 "current_station": {
                     "name": node.current_station.name,
                     "_id": node.current_station.id,
                     "line_id": node.current_station.line_id,
                     "line": {
-                        "name": node.current_station.line.name,
-                        "_id": node.current_station.line.id,
-                        "shop_id": node.current_station.line.shop_id,
+                        "name": node.current_station.lines.name,
+                        "_id": node.current_station.lines.id,
+                        "shop_id": node.current_station.lines.shop_id,
                         "shop": {
-                            "name": node.current_station.line.shop.name,
-                            "_id": node.current_station.line.shop.id
+                            "name": node.current_station.lines.shops.name,
+                            "_id": node.current_station.lines.shops.id
                         }
                     }
                 },
@@ -120,12 +120,12 @@ def get_paginated_nodes():
                     "_id": node.next_station.id,
                     "line_id": node.next_station.line_id,
                     "line": {
-                        "name": node.next_station.line.name,
-                        "_id": node.next_station.line.id,
-                        "shop_id": node.next_station.line.shop_id,
+                        "name": node.next_station.lines.name,
+                        "_id": node.next_station.lines.id,
+                        "shop_id": node.next_station.lines.shop_id,
                         "shop": {
-                            "name": node.next_station.line.shop.name,
-                            "_id": node.next_station.line.shop.id
+                            "name": node.next_station.lines.shops.name,
+                            "_id": node.next_station.lines.shops.id
                         }
                     }
                 }
@@ -141,16 +141,12 @@ def get_paginated_nodes():
     return jsonify(response)
 
 def get_nodes_by_route_id(route_id): 
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
-
-    # Filter nodes by the given route_id
-    paginated_nodes = NodeModel.query.filter_by(route_id=route_id).paginate(page=page, per_page=per_page, error_out=False)
+    nodes = NodeModel.query.filter_by(route_id=route_id).all()
 
     response = {
         "items": [
             {
-                "timestamp": node.created_at.isoformat() + 'Z',  
+                "timestamp": node.created_at,  
                 "_id": node.id,
                 "is_start": node.is_start,
                 "is_end": node.is_end,
@@ -158,21 +154,21 @@ def get_nodes_by_route_id(route_id):
                 "current_station_id": node.current_station_id,
                 "next_station_id": node.next_station_id,
                 "route": {
-                    "name": node.route.name,
-                    "description": node.route.description,
-                    "_id": node.route.id
+                    "name": node.routes.name,
+                    "description": node.routes.description,
+                    "_id": node.routes.id
                 },
                 "current_station": {
                     "name": node.current_station.name,
                     "_id": node.current_station.id,
                     "line_id": node.current_station.line_id,
                     "line": {
-                        "name": node.current_station.line.name,
-                        "_id": node.current_station.line.id,
-                        "shop_id": node.current_station.line.shop_id,
+                        "name": node.current_station.lines.name,
+                        "_id": node.current_station.lines.id,
+                        "shop_id": node.current_station.lines.shop_id,
                         "shop": {
-                            "name": node.current_station.line.shop.name,
-                            "_id": node.current_station.line.shop.id
+                            "name": node.current_station.lines.shops.name,
+                            "_id": node.current_station.lines.shops.id
                         }
                     }
                 },
@@ -181,25 +177,20 @@ def get_nodes_by_route_id(route_id):
                     "_id": node.next_station.id,
                     "line_id": node.next_station.line_id,
                     "line": {
-                        "name": node.next_station.line.name,
-                        "_id": node.next_station.line.id,
-                        "shop_id": node.next_station.line.shop_id,
+                        "name": node.next_station.lines.name,
+                        "_id": node.next_station.lines.id,
+                        "shop_id": node.next_station.lines.shop_id,
                         "shop": {
-                            "name": node.next_station.line.shop.name,
-                            "_id": node.next_station.line.shop.id
+                            "name": node.next_station.lines.shops.name,
+                            "_id": node.next_station.lines.shops.id
                         }
                     }
                 }
-            } for node in paginated_nodes.items
-        ],
-        "pagination": {
-            "page": paginated_nodes.page,
-            "size": paginated_nodes.per_page,
-            "total": paginated_nodes.total,
-            "has_more": paginated_nodes.has_next
-        }
+            } for node in nodes
+        ]
     }
     return jsonify(response)
+
 
 
 def create_node():
@@ -215,7 +206,8 @@ def create_node():
     new_node.save()
 
     response = {
-        "timestamp": new_node.created_at.isoformat() + 'Z',  
+        "timestamp": new_node.created_at,  
+        "_id": new_node.id,
         "current_station_id": new_node.current_station_id,
         "next_station_id": new_node.next_station_id,
         "is_start": new_node.is_start,
@@ -230,13 +222,18 @@ def update_node(node_id):
     node = NodeModel.get_by_id(node_id)
     
     if not node:
-        abort(404, message="Node not found")
+        abort(404, description="Node not found")
         
     node.update(**data)
     
     response = {
-        "name": node.name,
-        "description": node.description,
+        "timestamp": node.created_at,  
+        "_id": node.id,
+        "current_station_id": node.current_station_id,
+        "next_station_id": node.next_station_id,
+        "is_start": node.is_start,
+        "is_end": node.is_end,
+        "route_id": node.route_id
     }
     
     return jsonify(response)
