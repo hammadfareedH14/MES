@@ -1,7 +1,7 @@
 from db import db 
 from enum import Enum
 from models.abstract import CommonModel,SurrogatePK
-# from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship
 
 class Type(Enum):
     """
@@ -17,4 +17,8 @@ class CategoryModel(CommonModel, SurrogatePK):
     __tablename__ = "category"
     name = db.Column(db.String(100), nullable=False)
     _type = db.Column(db.Enum(Type), nullable=False)
+
+
+    # Relationship
+    parts = relationship('PartModel', back_populates='categories')
     
