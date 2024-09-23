@@ -9,3 +9,4 @@ class RouteModel(CommonModel, SurrogatePK):
 
 # Relationship
     nodes = db.relationship("NodeModel", back_populates="route")
+    parts = relationship('PartModel', back_populates='routes')  
